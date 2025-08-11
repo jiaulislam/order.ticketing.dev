@@ -13,11 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Ticket {
+  id    Int     @id
+  title String
+  price Float
+  Order Order[]
+}
+
 model Order {
   id          Int      @id @default(autoincrement())
   userId      Int
   status      String
   totalAmount Float
+  ticket      Ticket   @relation(fields: [ticketId], references: [id])
+  ticketId    Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

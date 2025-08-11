@@ -14,7 +14,7 @@ router.get("/health", (req: Request, res: Response) => {
 
 router.get('/', requireAuthMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const orders = await orderService.findAll({ where: { userId: req.currentUser!.id } });
+        const orders = await orderService.findAll({ where: { userId: req.currentUser!.id }, include: { ticket: true } });
         res.json(orders);
     } catch (error) {
         console.error(error);
