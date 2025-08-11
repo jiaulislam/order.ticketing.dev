@@ -8,6 +8,10 @@ const router = express.Router();
 
 const orderService = new OrderService();
 
+router.get("/health", (req: Request, res: Response) => {
+    res.json({ status: "OK" });
+});
+
 router.get('/', requireAuthMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const orders = await orderService.findAll({ where: { userId: req.currentUser!.id } });
