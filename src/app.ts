@@ -15,10 +15,11 @@ app.use(currentUserMiddleware);
 // inject routes
 app.use('/api/v1/orders', orderRouter);
 
+
+// middleware
 app.use(errorHandlerMiddleware);
 
 // kafka singleton instance
-
 const kafkaService = new OrderKafkaService();
 
 export { app, kafkaService };

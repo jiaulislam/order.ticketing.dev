@@ -458,3 +458,5 @@ pyrightconfig.json
 /generated/prisma
 
 /prisma/generated/prisma
+
+/prisma/generated/prisma
