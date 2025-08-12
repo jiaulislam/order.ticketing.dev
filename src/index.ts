@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config()
 
-import { app, kafkaService } from "./app";
+import { app, kafkaOrderProducer, kafkaOrderConsumer } from "./app";
 
 
 const checkKafkaEnvVariables = () => {
@@ -35,7 +35,12 @@ const start = async () => {
     }
 
     checkKafkaEnvVariables();
-    await kafkaService.connect();
+    await kafkaOrderProducer.connect();
+    await kafkaOrderConsumer.connect();
+    // consume
+    await kafkaOrderConsumer.consume().catch(err => {
+        console.error(`Error consuming Kafka messages: ${err}`);
+    });
     app.listen(process.env.SERVER_PORT || 4002, () => {
         console.log(`Order Service is running on port ${process.env.SERVER_PORT || 4002}`);
     });
@@ -46,10 +51,12 @@ start(); // eslint-disable-line
 // Graceful shutdown
 const gracefulShutdown = async () => {
     try {
-        await kafkaService.disconnect();
-        console.log(`Kafka service disconnected`);
+        await kafkaOrderProducer.disconnect();
+        console.log(`Kafka producer disconnected`);
+        await kafkaOrderConsumer.disconnect();
+        console.log(`Kafka consumer disconnected`);
     } catch (error) {
-        console.error(`Error disconnecting Kafka service: ${error}`);
+        console.error(`Error disconnecting Kafka producer: ${error}`);
     } finally {
         process.exit(0);
     }

@@ -14,10 +14,10 @@ datasource db {
 }
 
 model Ticket {
-  id    Int     @id
-  title String
-  price Float
-  Order Order[]
+  id     Int     @id
+  title  String
+  price  Float
+  orders Order[]
 }
 
 model Order {
