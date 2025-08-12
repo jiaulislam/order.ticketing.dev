@@ -41,7 +41,7 @@ export class OrderKafkaConsumer extends AbstractKafkaConsumer {
         super(kafkaConsumerConfig, [Subject.TICKET_CREATED, Subject.TICKET_UPDATED]);
     }
 
-    async onMessage(topic: string, message: any): Promise<void> {
+    async onMessage(topic: Subject, message: any): Promise<void> {
         const handler = topicHandlers[topic];
         if (handler) {
             console.log(`Received message on topic ${topic}:`, message);

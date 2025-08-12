@@ -29,8 +29,12 @@ const handleTicketUpdate = async (data: { id: number, title: string, price: numb
     });
 }
 
-
-const topicHandlers: any = {}
+type HandlerFn = (data: any) => Promise<void>;
+// Map each Subject to its handler function
+type TopicHandlers = {
+    [key in Subject]: HandlerFn;
+};
+const topicHandlers: TopicHandlers = {} as TopicHandlers;
 
 topicHandlers[Subject.TICKET_CREATED] = handleTicketCreate
 topicHandlers[Subject.TICKET_UPDATED] = handleTicketUpdate
