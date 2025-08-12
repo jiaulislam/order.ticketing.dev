@@ -2,7 +2,7 @@ import express from 'express';
 import { json } from 'body-parser';
 import cookieSession from "cookie-session";
 import { currentUserMiddleware, errorHandlerMiddleware } from "@jiaul.islam/common.ticketing.dev";
-import { OrderKafkaConsumer, OrderKafkaService } from "./kafka"
+import { OrderKafkaConsumer, OrderKafkaProducer } from "./kafka"
 // routes
 import { orderRouter } from './routes';
 
@@ -20,6 +20,6 @@ app.use('/api/v1/orders', orderRouter);
 app.use(errorHandlerMiddleware);
 
 // kafka singleton instance
-const kafkaOrderProducer = new OrderKafkaService();
+const kafkaOrderProducer = new OrderKafkaProducer();
 const kafkaOrderConsumer = new OrderKafkaConsumer();
 export { app, kafkaOrderProducer, kafkaOrderConsumer };

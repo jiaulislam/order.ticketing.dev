@@ -1,6 +1,7 @@
 import { AbstractKafkaConsumer, AbstractKafkaProducer } from "@jiaul.islam/common.ticketing.dev";
 import { ConsumerGlobalAndTopicConfig, ProducerConstructorConfig } from "@confluentinc/kafka-javascript/types/kafkajs";
 import { Subject } from "@jiaul.islam/common.ticketing.dev";
+import topicHandlers from "./service/event-dispatch.service";
 
 const kafkaProducerConfig: ProducerConstructorConfig = {
     "bootstrap.servers": process.env.KAFKA_BOOTSTRAP_SERVERS!,
@@ -23,7 +24,7 @@ const kafkaConsumerConfig: ConsumerGlobalAndTopicConfig = {
     "group.id": process.env.KAFKA_GROUP_ID!,
 };
 
-export class OrderKafkaService extends AbstractKafkaProducer {
+export class OrderKafkaProducer extends AbstractKafkaProducer {
     readonly clusterName = "ticketing-cluster";
 
     constructor() {
@@ -40,7 +41,13 @@ export class OrderKafkaConsumer extends AbstractKafkaConsumer {
         super(kafkaConsumerConfig, [Subject.TICKET_CREATED, Subject.TICKET_UPDATED]);
     }
 
-    onMessage(topic: string, message: any): void {
-        console.log(`Received message on topic ${topic}:`, message);
+    async onMessage(topic: string, message: any): Promise<void> {
+        const handler = topicHandlers[topic];
+        if (handler) {
+            console.log(`Received message on topic ${topic}:`, message);
+            await handler(message);
+        } else {
+            console.warn(`No handler found for topic ${topic}`);
+        }
     }
 }
