@@ -4,9 +4,14 @@ import { Subject } from "@jiaul.islam/common.ticketing.dev";
 
 const prisma = new PrismaClient();
 
+
+/**
+ * Handler for the TICKET_CREATED event.
+ * Creates a new ticket in the database using the provided data.
+ * @param data - The ticket data containing id, title, and price.
+ */
 const handleTicketCreate = async (data: { id: number, title: string, price: number }) => {
     const { id, title, price } = data;
-
     await prisma.ticket.create({
         data: {
             id,
@@ -17,9 +22,14 @@ const handleTicketCreate = async (data: { id: number, title: string, price: numb
 }
 
 
+
+/**
+ * Handler for the TICKET_UPDATED event.
+ * Updates an existing ticket in the database with the provided data.
+ * @param data - The ticket data containing id, title, and price.
+ */
 const handleTicketUpdate = async (data: { id: number, title: string, price: number }) => {
     const { id, title, price } = data;
-
     await prisma.ticket.update({
         where: { id },
         data: {
