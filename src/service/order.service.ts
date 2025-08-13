@@ -4,6 +4,15 @@ import { OrderStatusEnum, ValidationError, BaseModelService } from "@jiaul.islam
 
 const prisma = new PrismaClient();
 
+/**
+ * Service class for managing Order entities using Prisma ORM.
+ *
+ * Extends the BaseModelService to provide type-safe CRUD operations, error handling,
+ * and business logic for the Order model. This service is enterprise-ready and can be
+ * further extended for custom business requirements.
+ *
+ * @extends BaseModelService<Prisma.OrderDelegate<DefaultArgs>, Order, ...>
+ */
 export class OrderService extends BaseModelService<
     Prisma.OrderDelegate<DefaultArgs>,
     Order,
@@ -15,12 +24,21 @@ export class OrderService extends BaseModelService<
     Prisma.OrderCountArgs<DefaultArgs>,
     Prisma.OrderUpsertArgs<DefaultArgs>
 > {
+    /**
+     * Returns the Prisma delegate for the Order model.
+     *
+     * @returns {Prisma.OrderDelegate<DefaultArgs>} The Prisma delegate for Order.
+     */
     protected getModel() {
         return prisma.order;
     }
 
     /**
-     * Find all orders with optional filtering.
+     * Retrieves all orders matching the provided filter criteria.
+     *
+     * @param {Prisma.OrderFindManyArgs<DefaultArgs>} [args] - Optional filter, pagination, and sorting options.
+     * @returns {Promise<Order[]>} A promise that resolves to an array of Order entities.
+     * @throws {ValidationError} If an error occurs during retrieval.
      */
     public async findAll(args?: Prisma.OrderFindManyArgs<DefaultArgs>): Promise<Order[]> {
         try {
@@ -31,7 +49,11 @@ export class OrderService extends BaseModelService<
     }
 
     /**
-     * Create a new order with validation and ticket price assignment.
+     * Creates a new order after validating the input and assigning the ticket price.
+     *
+     * @param {Prisma.OrderCreateArgs<DefaultArgs>} args - The arguments for creating an order, including data.
+     * @returns {Promise<Order>} A promise that resolves to the created Order entity.
+     * @throws {ValidationError} If the order amount is invalid, status is not pending, or ticket ID is invalid.
      */
     public async create(args: Prisma.OrderCreateArgs<DefaultArgs>): Promise<Order> {
         try {
