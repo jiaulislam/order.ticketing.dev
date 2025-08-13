@@ -13,8 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@confluentinc/kafka-javascript": "^1.4.0",
-    "@jiaul.islam/common.ticketing.dev": "^1.0.23",
+    "@jiaul.islam/common.ticketing.dev": "^1.0.25",
     "@prisma/client": "^6.13.0",
     "@types/express": "^5.0.3",
     "cookie-session": "^2.1.1",
@@ -22,6 +21,7 @@
     "express-validator": "^7.2.1",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"
   },

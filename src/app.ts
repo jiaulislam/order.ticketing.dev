@@ -3,6 +3,7 @@ import { json } from 'body-parser';
 import cookieSession from "cookie-session";
 import { currentUserMiddleware, errorHandlerMiddleware } from "@jiaul.islam/common.ticketing.dev";
 import { OrderKafkaConsumer, OrderKafkaProducer } from "./kafka"
+
 // routes
 import { orderRouter } from './routes';
 
@@ -22,4 +23,5 @@ app.use(errorHandlerMiddleware);
 // kafka singleton instance
 const kafkaOrderProducer = new OrderKafkaProducer();
 const kafkaOrderConsumer = new OrderKafkaConsumer();
+
 export { app, kafkaOrderProducer, kafkaOrderConsumer };
