@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client"
 import { Subject } from "@jiaul.islam/common.ticketing.dev";
+import { TicketService } from "./ticket.service";
 
 
-const prisma = new PrismaClient();
+const ticketService = new TicketService();
 
 
 /**
@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
  */
 const handleTicketCreate = async (data: { id: number, title: string, price: number }) => {
     const { id, title, price } = data;
-    await prisma.ticket.create({
+    await ticketService.create({
         data: {
             id,
             title,
@@ -30,7 +30,7 @@ const handleTicketCreate = async (data: { id: number, title: string, price: numb
  */
 const handleTicketUpdate = async (data: { id: number, title: string, price: number }) => {
     const { id, title, price } = data;
-    await prisma.ticket.update({
+    await ticketService.update({
         where: { id },
         data: {
             title,
@@ -50,4 +50,4 @@ topicHandlers[Subject.TICKET_CREATED] = handleTicketCreate
 topicHandlers[Subject.TICKET_UPDATED] = handleTicketUpdate
 
 
-export default topicHandlers
+export { topicHandlers }

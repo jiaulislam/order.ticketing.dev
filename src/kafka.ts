@@ -1,7 +1,7 @@
 import { KafkaConfig } from "kafkajs";
 import { AbstractKafkaConsumer, AbstractKafkaProducer } from "@jiaul.islam/common.ticketing.dev";
 import { Subject } from "@jiaul.islam/common.ticketing.dev";
-import topicHandlers from "./service/event-dispatch.service";
+import { topicHandlers } from "./service";
 
 const kafkaConfig: KafkaConfig = {
     clientId: process.env.KAFKA_CLIENT_ID!,
