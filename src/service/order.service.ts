@@ -58,15 +58,11 @@ export class OrderService extends BaseModelService<
     public async create(args: Prisma.OrderCreateArgs<DefaultArgs>): Promise<Order> {
         try {
             const data = args.data;
-            if (data.totalAmount < 0) {
-                throw new ValidationError("Invalid order amount");
-            }
             if (data.status !== OrderStatusEnum.PENDING) {
                 throw new ValidationError(`Invalid order status: ${data.status}`);
             }
             // set the ticket price for the totalAmount
-            const ticketId = (data.ticket as { connect: { id: number } }).connect.id;
-            const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
+            const ticket = await prisma.ticket.findUnique({ where: { id: Number(data.ticketId) } });
             if (!ticket) {
                 throw new ValidationError("Invalid ticket ID");
             }
