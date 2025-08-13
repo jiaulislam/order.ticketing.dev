@@ -1,14 +1,13 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
 import { requireAuthMiddleware, validateRequestMiddleware, OrderStatusEnum } from '@jiaul.islam/common.ticketing.dev';
-import { OrderService, TicketService } from '../service';
+import { OrderService } from '../service';
 import { StatusCodes } from 'http-status-codes';
 import { OrderCreatedEventProducer, OrderUpdatedEventProducer } from '../events/order.event';
 
 const router = express.Router();
 
 const orderService = new OrderService();
-const ticketService = new TicketService();
 
 router.get("/health", (_, res: Response) => {
     res.json({ status: "OK" });
