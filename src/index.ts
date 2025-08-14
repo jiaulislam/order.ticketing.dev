@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { app, kafkaOrderProducer, kafkaOrderConsumer } from './app';
+import './cron';
+
 /**
  * Starts the Order Service application.
  * Ensures required environment variables are set and connects to Kafka.
