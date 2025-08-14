@@ -1,6 +1,6 @@
 import { Prisma, Order, PrismaClient } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
-import { OrderStatusEnum, ValidationError, BaseModelService } from "@jiaul.islam/common.ticketing.dev";
+import { OrderStatusEnum, ValidationError, BaseModelService, NotFoundError } from "@jiaul.islam/common.ticketing.dev";
 
 const prisma = new PrismaClient();
 
@@ -64,7 +64,7 @@ export class OrderService extends BaseModelService<
             // set the ticket price for the totalAmount
             const ticket = await prisma.ticket.findUnique({ where: { id: Number(data.ticketId) } });
             if (!ticket) {
-                throw new ValidationError("Invalid ticket ID");
+                throw new NotFoundError(`Ticket with ID ${data.ticketId} not found`);
             }
             data.totalAmount = ticket.price;
             return await this.getModel().create({ data });
@@ -75,11 +75,11 @@ export class OrderService extends BaseModelService<
 
     public async update(args: Prisma.OrderUpdateArgs<DefaultArgs>, delegate?: Prisma.OrderDelegate<DefaultArgs, {}> | undefined): Promise<Order> {
         try {
-            const existingOrder = await this.getModel().findUnique({
+            const order = await this.getModel().findUnique({
                 where: { id: args.where.id }
             });
-            if (!existingOrder) {
-                throw new ValidationError(`Order with ID ${args.where.id} not found`);
+            if (!order) {
+                throw new NotFoundError(`Order with ID ${args.where.id} not found`);
             }
             return await super.update(args, delegate);
         } catch (error) {
