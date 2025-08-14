@@ -53,7 +53,7 @@ router.post('/', requireAuthMiddleware, [
                     }
                 }
             });
-
+            order.expiresAt.toISOString();
             const orderProducer = new OrderCreatedEventProducer();
             await orderProducer.publish(order);
 
