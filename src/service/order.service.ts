@@ -66,7 +66,10 @@ export class OrderService extends BaseModelService<
             if (!ticket) {
                 throw new NotFoundError(`Ticket with ID ${data.ticketId} not found`);
             }
+            const expiresAt = new Date();
+            expiresAt.setMinutes(expiresAt.getMinutes() + 15); // Set expiration to 15 minutes from now
             data.totalAmount = ticket.price;
+            data.expiresAt = expiresAt;
             return await this.getModel().create({ data });
         } catch (error) {
             this.handleError(error, "create", args);

@@ -28,6 +28,7 @@ model Order {
   totalAmount Float
   ticket      Ticket   @relation(fields: [ticketId], references: [id])
   ticketId    Int
+  expiresAt   DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

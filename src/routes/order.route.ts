@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
-import { requireAuthMiddleware, validateRequestMiddleware, OrderStatusEnum, ValidationError } from '@jiaul.islam/common.ticketing.dev';
+import { requireAuthMiddleware, validateRequestMiddleware, OrderStatusEnum, ValidationError, NotFoundError } from '@jiaul.islam/common.ticketing.dev';
 import { OrderService, TicketService } from '../service';
 import { StatusCodes } from 'http-status-codes';
 import { OrderCreatedEventProducer, OrderUpdatedEventProducer } from '../events/order.event';
@@ -37,11 +37,10 @@ router.post('/', requireAuthMiddleware, [
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { status, ticketId } = req.body;
-            // You may need to fetch the ticket to get its price for totalAmount
             const ticket = await ticketService.findUnique(ticketId);
 
             if (!ticket) {
-                throw new ValidationError(`Ticket with ID ${ticketId} not found`);
+                throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
             }
 
             const order = await orderService.create({
