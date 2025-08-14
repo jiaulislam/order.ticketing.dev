@@ -53,9 +53,14 @@ router.post('/', requireAuthMiddleware, [
                     }
                 }
             });
-            order.expiresAt.toISOString();
+
             const orderProducer = new OrderCreatedEventProducer();
-            await orderProducer.publish(order);
+            await orderProducer.publish(
+                {
+                    ...order,
+                    expiresAt: order.expiresAt.toISOString()
+                }
+            );
 
             res.status(StatusCodes.CREATED).json(order);
         } catch (error) {
@@ -76,7 +81,7 @@ router.put("/:id", requireAuthMiddleware, [
         const order = await orderService.update({ where: { id: Number(req.params.id), userId: req.currentUser!.id }, data: { status, ticketId } });
 
         const orderProducer = new OrderUpdatedEventProducer();
-        await orderProducer.publish(order);
+        await orderProducer.publish({ ...order, expiresAt: order.expiresAt.toISOString() });
 
         res.status(StatusCodes.OK).json(order);
     } catch (error) {
