@@ -25,10 +25,10 @@ export class OrderKafkaConsumer extends AbstractKafkaConsumer {
 
     async onMessage(topic: Subject, message: any): Promise<void> {
         const handler = topicHandlers[topic];
-        if (handler) {
-            await handler(message);
-        } else {
-            console.warn(`No handler found for topic ${topic}`);
+        if (!handler) {
+            console.error(`No handler found for topic ${topic}`);
+            throw new Error(`No handler found for topic ${topic}`);
         }
+        await handler(message);
     }
 }
