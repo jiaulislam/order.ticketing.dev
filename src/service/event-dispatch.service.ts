@@ -32,7 +32,7 @@ const handleTicketCreate = async (data: TicketCreatedUpdatedEvent) => {
 const handleTicketUpdate = async (data: TicketCreatedUpdatedEvent) => {
     const { id, title, price, version } = data;
     await ticketService.update({
-        where: { id: id, version: version - 1 },
+        where: { id: id, version: version - 1 }, // using optimistic version control
         data: {
             title,
             price,
