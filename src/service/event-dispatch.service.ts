@@ -1,4 +1,4 @@
-import { Subject } from "@jiaul.islam/common.ticketing.dev";
+import { Subject, TicketCreatedUpdatedEvent } from "@jiaul.islam/common.ticketing.dev";
 import { TicketService } from "./ticket.service";
 
 
@@ -10,13 +10,14 @@ const ticketService = new TicketService();
  * Creates a new ticket in the database using the provided data.
  * @param data - The ticket data containing id, title, and price.
  */
-const handleTicketCreate = async (data: { id: number, title: string, price: number }) => {
-    const { id, title, price } = data;
+const handleTicketCreate = async (data: TicketCreatedUpdatedEvent) => {
+    const { id, title, price, version } = data;
     await ticketService.create({
         data: {
             id,
             title,
-            price
+            price,
+            version
         }
     });
 }
@@ -28,13 +29,14 @@ const handleTicketCreate = async (data: { id: number, title: string, price: numb
  * Updates an existing ticket in the database with the provided data.
  * @param data - The ticket data containing id, title, and price.
  */
-const handleTicketUpdate = async (data: { id: number, title: string, price: number }) => {
-    const { id, title, price } = data;
+const handleTicketUpdate = async (data: TicketCreatedUpdatedEvent) => {
+    const { id, title, price, version } = data;
     await ticketService.update({
-        where: { id },
+        where: { id: id, version: version - 1 },
         data: {
             title,
-            price
+            price,
+            version
         }
     });
 }
