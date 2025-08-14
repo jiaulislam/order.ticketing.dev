@@ -72,4 +72,18 @@ export class OrderService extends BaseModelService<
             this.handleError(error, "create", args);
         }
     }
+
+    public async update(args: Prisma.OrderUpdateArgs<DefaultArgs>, delegate?: Prisma.OrderDelegate<DefaultArgs, {}> | undefined): Promise<Order> {
+        try {
+            const existingOrder = await this.getModel().findUnique({
+                where: { id: args.where.id }
+            });
+            if (!existingOrder) {
+                throw new ValidationError(`Order with ID ${args.where.id} not found`);
+            }
+            return await super.update(args, delegate);
+        } catch (error) {
+            this.handleError(error, "update", args);
+        }
+    }
 }

@@ -1,13 +1,14 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
-import { requireAuthMiddleware, validateRequestMiddleware, OrderStatusEnum } from '@jiaul.islam/common.ticketing.dev';
-import { OrderService } from '../service';
+import { requireAuthMiddleware, validateRequestMiddleware, OrderStatusEnum, ValidationError } from '@jiaul.islam/common.ticketing.dev';
+import { OrderService, TicketService } from '../service';
 import { StatusCodes } from 'http-status-codes';
 import { OrderCreatedEventProducer, OrderUpdatedEventProducer } from '../events/order.event';
 
 const router = express.Router();
 
 const orderService = new OrderService();
+const ticketService = new TicketService();
 
 router.get("/health", (_, res: Response) => {
     res.json({ status: "OK" });
@@ -35,7 +36,24 @@ router.post('/', requireAuthMiddleware, [
     validateRequestMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const order = await orderService.create({ data: { userId: req.currentUser!.id, ...req.body } });
+            const { status, ticketId } = req.body;
+            // You may need to fetch the ticket to get its price for totalAmount
+            const ticket = await ticketService.findUnique(ticketId);
+
+            if (!ticket) {
+                throw new ValidationError(`Ticket with ID ${ticketId} not found`);
+            }
+
+            const order = await orderService.create({
+                data: {
+                    userId: req.currentUser!.id,
+                    status,
+                    totalAmount: ticket.price,
+                    ticket: {
+                        connect: { id: ticketId }
+                    }
+                }
+            });
 
             const orderProducer = new OrderCreatedEventProducer();
             await orderProducer.publish(order);
@@ -47,16 +65,16 @@ router.post('/', requireAuthMiddleware, [
         }
     });
 
-router.post("/:id", requireAuthMiddleware, [
+router.put("/:id", requireAuthMiddleware, [
     body('status').isIn([
         OrderStatusEnum.PAYMENT_PENDING,
         OrderStatusEnum.CANCELLED,
         OrderStatusEnum.COMPLETED
     ]).withMessage('Invalid order status'),
-    body('totalAmount').isNumeric().withMessage('Total amount must be a number'),
 ], validateRequestMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const order = await orderService.update({ where: { id: Number(req.params.id), userId: req.currentUser!.id }, data: req.body });
+        const { status, ticketId } = req.body;
+        const order = await orderService.update({ where: { id: Number(req.params.id), userId: req.currentUser!.id }, data: { status, ticketId } });
 
         const orderProducer = new OrderUpdatedEventProducer();
         await orderProducer.publish(order);
