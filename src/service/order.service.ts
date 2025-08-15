@@ -6,6 +6,7 @@ import {
     BaseModelService,
     NotFoundError,
 } from '@jiaul.islam/common.ticketing.dev';
+import { OrderUpdatedEventProducer } from '../events/order.event';
 
 const prisma = new PrismaClient();
 
@@ -104,12 +105,15 @@ export class OrderService extends BaseModelService<
                 },
             });
             for (const order of expiredOrders) {
-                console.log(`Cancelling expired order: ${order.id}`);
-                await this.getModel().update({
+                const updatedOrder = await this.getModel().update({
                     where: { id: order.id },
                     data: { status: OrderStatusEnum.CANCELLED },
                 });
+                console.log(`Cancelled expired order: ${order.id}`);
+                const orderProducer = new OrderUpdatedEventProducer();
+                await orderProducer.publish({ ...updatedOrder, expiresAt: updatedOrder.expiresAt.toISOString() });
             }
+
         } catch (error) {
             this.handleError(error, 'cancelExpiredOrders');
         }
