@@ -66,6 +66,7 @@ router.post(
             const orderProducer = new OrderCreatedEventProducer();
             await orderProducer.publish({
                 ...order,
+                status: OrderStatusEnum.PENDING,
                 expiresAt: order.expiresAt.toISOString(),
             });
 
@@ -88,14 +89,14 @@ router.put(
     validateRequestMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { status, ticketId } = req.body;
+            const { status, ticketId } = req.body as { status: OrderStatusEnum; ticketId: number };
             const order = await orderService.update({
                 where: { id: Number(req.params.id), userId: req.currentUser!.id },
                 data: { status, ticketId },
             });
 
             const orderProducer = new OrderUpdatedEventProducer();
-            await orderProducer.publish({ ...order, expiresAt: order.expiresAt.toISOString() });
+            await orderProducer.publish({ ...order, status: status, expiresAt: order.expiresAt.toISOString() });
 
             res.status(StatusCodes.OK).json(order);
         } catch (error) {

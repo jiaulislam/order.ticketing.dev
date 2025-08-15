@@ -111,7 +111,7 @@ export class OrderService extends BaseModelService<
                 });
                 console.log(`Cancelled expired order: ${order.id}`);
                 const orderProducer = new OrderUpdatedEventProducer();
-                await orderProducer.publish({ ...updatedOrder, expiresAt: updatedOrder.expiresAt.toISOString() });
+                await orderProducer.publish({ ...updatedOrder, status: OrderStatusEnum.CANCELLED, expiresAt: updatedOrder.expiresAt.toISOString() });
             }
 
         } catch (error) {
