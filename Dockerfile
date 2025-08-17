@@ -1,5 +1,9 @@
 FROM node:24-alpine AS base
+
 WORKDIR /app
+
+# Update npm to latest version
+RUN npm install -g npm@latest
 
 # Install dependencies only for production
 COPY package.json package-lock.json* ./
